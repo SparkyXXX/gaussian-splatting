@@ -52,8 +52,8 @@ def evaluate(model_paths):
             psnrs = []
             lpipss = []
             for idx in tqdm(range(len(renders)), desc="Metric evaluation progress"):
-                ssims.append(ssim(renders[idx], gts[idx]))
                 psnrs.append(psnr(renders[idx], gts[idx]))
+                ssims.append(ssim(renders[idx], gts[idx]))
                 lpipss.append(lpips(renders[idx], gts[idx], net_type='vgg'))
             print("  SSIM : {:>12.7f}".format(torch.tensor(ssims).mean(), ".5"))
             print("  PSNR : {:>12.7f}".format(torch.tensor(psnrs).mean(), ".5"))
@@ -74,8 +74,7 @@ def evaluate(model_paths):
 
 if __name__ == "__main__":
     setproctitle("Ruixiang's Work 😆")
-    device = torch.device("cuda:0")
-    torch.cuda.set_device(device)
+    os.environ["CUDA_VISIBLE_DEVICES"] = "6"
     parser = ArgumentParser(description="Training script parameters")
     parser.add_argument('--model_paths', '-m', required=True, nargs="+", type=str, default=[])
     args = parser.parse_args()

@@ -39,7 +39,13 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
         gt = view.original_image[0:3, :, :]
 
         if args.train_test_exp:
-            rendering = rendering[..., rendering.shape[-1] // 2:]
+            # rendering = rendering[..., rendering.shape[-1] // 2:]
+            render_result = render(view, gaussians, pipeline, background)
+            rendering = render_result["render"]
+            viewspace_points = render_result["viewspace_points"]
+            visibility_filter = render_result["visibility_filter"]
+            radii = render_result["radii"]
+            depth_image = render_result["depth"]
             gt = gt[..., gt.shape[-1] // 2:]
 
         torchvision.utils.save_image(rendering, os.path.join(render_path, '{0:05d}'.format(idx) + ".png"))

@@ -16,8 +16,7 @@ Camera = collections.namedtuple(
     "Camera", ["id", "model", "width", "height", "params"])
 BaseImage = collections.namedtuple(
     "Image", ["id", "qvec", "tvec", "camera_id", "name", "xys", "point3D_ids"])
-Point3D = collections.namedtuple(
-    "Point3D", ["id", "xyz", "rgb", "error", "image_ids", "point2D_idxs"])
+
 CAMERA_MODELS = {
     CameraModel(model_id=0, model_name="SIMPLE_PINHOLE", num_params=3),
     CameraModel(model_id=1, model_name="PINHOLE", num_params=4),
@@ -35,10 +34,6 @@ CAMERA_MODEL_IDS = dict([(camera_model.model_id, camera_model)
                          for camera_model in CAMERA_MODELS])
 CAMERA_MODEL_NAMES = dict([(camera_model.model_name, camera_model)
                            for camera_model in CAMERA_MODELS])
-
-class MyImage(BaseImage):
-    def qvec2rotmat(self):
-        return qvec2rotmat(self.qvec)
 
 class BasicPointCloud(NamedTuple):
     points : np.array
@@ -151,7 +146,7 @@ def read_extrinsics_binary(path_to_model_file):
             x_y_id_s = read_next_bytes(fid, num_bytes=24*num_points2D, format_char_sequence="ddq"*num_points2D)
             xys = np.column_stack([tuple(map(float, x_y_id_s[0::3])), tuple(map(float, x_y_id_s[1::3]))])
             point3D_ids = np.array(tuple(map(int, x_y_id_s[2::3])))
-            images[image_id] = MyImage(id=image_id,qvec=qvec, tvec=tvec, 
+            images[image_id] = BaseImage(id=image_id,qvec=qvec, tvec=tvec, 
                                      camera_id=camera_id, name=image_name, 
                                      xys=xys, point3D_ids=point3D_ids)
     return images
